@@ -93,7 +93,7 @@ jobs:
 
   deploy:
     name: Deploy to Kubernetes
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, k8s]
     needs: build-and-push
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     
