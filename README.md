@@ -593,3 +593,5 @@ Ce projet est réalisé dans le cadre d'un projet éducatif pour Albert School.
 ---
 
 **⭐ N'oubliez pas de star le repo si ce projet vous a été utile !**
+
+## Test de déclenchement du workflow
