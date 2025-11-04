@@ -91,39 +91,64 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-  deploy:
+    deploy:
     name: Deploy to Kubernetes
-    runs-on: [self-hosted, k8s]
     needs: build-and-push
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
+    # autorise le déploiement à la fois sur push(main) ET sur Run workflow
+    if: >
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch')
+    runs-on: [self-hosted, k8s]   # ↩︎ ton runner "XPS_EMI" a bien le label k8s
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Update Kubernetes manifests
-      run: |
-        sed -i "s|YOUR_DOCKERHUB_USERNAME|${{ env.DOCKER_USERNAME }}|g" k8s/*.yaml
-        sed -i "s|:latest|:${{ env.IMAGE_TAG }}|g" k8s/*.yaml
-    
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v3
-    
-    - name: Configure kubectl
-      run: |
-        echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig
-        export KUBECONFIG=kubeconfig
-    
-    - name: Deploy to Kubernetes
-      run: |
-        kubectl apply -f k8s/
-        kubectl rollout status deployment/api-deployment -n mlops
-        kubectl rollout status deployment/webapp-deployment -n mlops
-    
-    - name: Verify deployment
-      run: |
-        kubectl get pods -n mlops
-        kubectl get services -n mlops
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'latest'
+
+      - name: Write kubeconfig from secret (Windows/PowerShell)
+        shell: pwsh
+        run: |
+          $bytes = [Convert]::FromBase64String("${{ secrets.KUBECONFIG_B64 }}")
+          $kubeDir = Join-Path $env:USERPROFILE ".kube"
+          New-Item -ItemType Directory -Path $kubeDir -Force | Out-Null
+          $cfg = Join-Path $kubeDir "config"
+          [IO.File]::WriteAllBytes($cfg, $bytes)
+          Write-Host "Kubeconfig written to $cfg"
+
+      - name: Update Kubernetes manifests (replace username + tag)
+        shell: pwsh
+        run: |
+          $user = "${{ env.DOCKER_USERNAME }}"
+          $tag  = "${{ env.IMAGE_TAG }}"
+          Get-ChildItem -Path "k8s" -Filter *.yaml | ForEach-Object {
+            $c = Get-Content $_.FullName -Raw
+            $c = $c -replace "YOUR_DOCKERHUB_USERNAME", $user
+            $c = $c -replace ":latest", (":" + $tag)
+            Set-Content -Path $_.FullName -Value $c -NoNewline
+          }
+
+      - name: Ensure namespace exists
+        shell: pwsh
+        run: |
+          kubectl get ns mlops 2>$null
+          if ($LASTEXITCODE -ne 0) { kubectl create ns mlops }
+
+      - name: Deploy to Kubernetes
+        shell: pwsh
+        run: |
+          kubectl apply -f k8s/
+          kubectl rollout status deployment/api-deployment -n mlops --timeout=120s
+          kubectl rollout status deployment/webapp-deployment -n mlops --timeout=120s
+
+      - name: Verify deployment
+        shell: pwsh
+        run: |
+          kubectl get pods -n mlops -o wide
+          kubectl get svc -n mlops -o wide
 
   integration-test:
     name: Run Integration Tests
