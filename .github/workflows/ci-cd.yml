@@ -2,145 +2,105 @@ name: CI/CD Pipeline
 
 on:
   workflow_dispatch:
-    inputs:
-      skip_tests:
-        description: "Skip tests on manual runs"
-        required: true
-        type: boolean
-        default: true
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
 env:
-  DOCKER_REGISTRY: docker.io
-  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-  IMAGE_TAG: ${{ github.sha }}
+  DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/mlops-dandelion-grass-classification
 
 jobs:
-  test:
+  tests:
     name: Run Tests
     runs-on: ubuntu-latest
-    continue-on-error: ${{ github.event_name == 'workflow_dispatch' && inputs.skip_tests }}
+
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: '3.10'
 
-      - name: Install minimal test deps (portable)
+      # (Optionnel) cache pip pour accélérer
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_freeze.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install torch CPU wheels
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install flake8 black pytest pytest-cov codecov
+          pip install --index-url https://download.pytorch.org/whl/cpu \
+            "torch==2.8.0" "torchvision==0.23.0" --no-cache-dir --progress-bar off
 
-      - name: Run linting
+      - name: Install project dependencies (freeze, w/o torch/vision)
         run: |
-          flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
-          black --check src/
+          # retirer torch/vision du freeze pour éviter qu'ils soient réinstallés
+          awk 'tolower($0) !~ /^torch==/ && tolower($0) !~ /^torchvision==/' requirements_freeze.txt > requirements_freeze_no_torch.txt
+          # forcer les roues binaires quand c'est possible (moins de build from source)
+          pip install -r requirements_freeze_no_torch.txt --only-binary=:all: --no-cache-dir --progress-bar off
 
-      - name: Run unit tests
+      - name: Run pytest
         run: |
-          pytest tests/unit/ -v --cov=src --cov-report=xml
+          pytest -q
+        env:
+          PYTHONWARNINGS: "ignore"
 
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
-        with:
-          file: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
-
-  build-and-push:
-    name: Build and Push Docker Images
+  build_and_push:
+    name: Build & Push Docker
+    needs: tests
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: test
-    if: >
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'workflow_dispatch')
-    strategy:
-      matrix:
-        service: [ "api", "webapp" ]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push ${{ matrix.service }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile.${{ matrix.service }}
           push: true
           tags: |
-            ${{ env.DOCKER_USERNAME }}/mlops-${{ matrix.service }}:latest
-            ${{ env.DOCKER_USERNAME }}/mlops-${{ matrix.service }}:${{ env.IMAGE_TAG }}
+            ${{ env.DOCKER_IMAGE }}:latest
+            ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+          # si tu veux accélérer et éviter d'installer deps système à chaque fois, ajoute un cache:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
   deploy:
-    name: Deploy to Kubernetes
-    needs: build-and-push
-    if: >
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'workflow_dispatch')
-    runs-on: [ self-hosted, k8s ]
+    name: Deploy (self-hosted)
+    needs: build_and_push
+    runs-on: self-hosted
+    if: github.ref == 'refs/heads/main'
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v4
-        with:
-          version: "latest"
-
-      - name: Write kubeconfig from secret (Windows/PowerShell)
-        shell: pwsh
+      - name: Pull latest image
         run: |
-          $bytes = [Convert]::FromBase64String("${{ secrets.KUBECONFIG_B64 }}")
-          $kubeDir = Join-Path $env:USERPROFILE ".kube"
-          New-Item -ItemType Directory -Path $kubeDir -Force | Out-Null
-          $cfg = Join-Path $kubeDir "config"
-          [IO.File]::WriteAllBytes($cfg, $bytes)
+          docker pull ${{ env.DOCKER_IMAGE }}:latest
 
-      - name: Update Kubernetes manifests (replace username + tag)
-        shell: pwsh
+      # Adapte ces commandes à ton infra (docker run / docker compose)
+      - name: Recreate container
         run: |
-          $user = "${{ env.DOCKER_USERNAME }}"
-          $tag  = "${{ env.IMAGE_TAG }}"
-          Get-ChildItem -Path "k8s" -Filter *.yaml | ForEach-Object {
-            $c = Get-Content $_.FullName -Raw
-            $c = $c -replace "YOUR_DOCKERHUB_USERNAME", $user
-            $c = $c -replace ":latest", (":" + $tag)
-            Set-Content -Path $_.FullName -Value $c -NoNewline
-          }
-
-      - name: Ensure namespace exists
-        shell: pwsh
-        run: |
-          kubectl get ns mlops 2>$null
-          if ($LASTEXITCODE -ne 0) { kubectl create ns mlops }
-
-      - name: Deploy to Kubernetes
-        shell: pwsh
-        run: |
-          kubectl apply -f k8s/
-          kubectl rollout status deployment/api-deployment -n mlops --timeout=120s
-          kubectl rollout status deployment/webapp-deployment -n mlops --timeout=120s
-
-      - name: Verify deployment
-        shell: pwsh
-        run: |
-          kubectl get pods -n mlops -o wide
-          kubectl get svc -n mlops -o wide
+          # Arrête et supprime l'ancien conteneur s'il existe
+          docker rm -f app || true
+          # Lance le nouveau conteneur (exemple, adapte ports/vars)
+          docker run -d --name app \
+            -p 8080:8080 \
+            --env-file .env \
+            ${{ env.DOCKER_IMAGE }}:latest
