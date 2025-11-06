@@ -1,21 +1,28 @@
+# Base image
 FROM python:3.9-slim
 
+# Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies (pour Pillow, etc.)
 RUN apt-get update && apt-get install -y \
-    build-essential \
+    libjpeg-dev \
+    zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# === CORRECTION ICI ===
+# Copier le BON fichier de requirements
+COPY requirements-webapp.txt .
 
-# Copy source code
-COPY src/ ./src/
+# Installer les BONNES dépendances
+RUN pip install --no-cache-dir -r requirements-webapp.txt
+
+# Copier le code source de la webapp
+COPY src/webapp/ ./src/webapp/
+COPY src/config.py ./src/config.py
 
 # Expose port
 EXPOSE 8501
 
-# Run Streamlit
-CMD ["streamlit", "run", "src/webapp/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# Commande de démarrage
+CMD ["streamlit", "run", "src/webapp/app_pro.py", "--server.port=8501", "--server.address=0.0.0.0"]
