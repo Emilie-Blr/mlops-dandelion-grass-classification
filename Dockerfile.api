@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir -r requirements-api.txt
 COPY src/ ./src/
 
 # Copy the trained model
-COPY models/best_model.pth ./models/best_model.pth
+#COPY models/best_model.pth ./models/best_model.pth
 
 # Expose port
 EXPOSE 8000
