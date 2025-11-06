@@ -35,7 +35,6 @@ attrs==24.3.0
 Automat==24.8.1
 autopep8==2.0.4
 AutoROM==0.6.1
-AutoROM.accept-rom-license==0.6.1
 babel==2.16.0
 backoff==2.2.1
 bcrypt==4.3.0
