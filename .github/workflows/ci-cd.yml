@@ -7,9 +7,8 @@ on:
   pull_request:
     branches: [ "main" ]
 
-# Pas besoin de cette variable globale, nous la définirons dans chaque job
-# env:
-#   DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/mlops-dandelion-grass-classification
+env:
+  DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/mlops-dandelion-grass-classification
 
 jobs:
   tests:
@@ -54,7 +53,7 @@ jobs:
           PYTHONWARNINGS: "ignore"
 
   build_and_push:
-    name: Build & Push Docker Images
+    name: Build & Push Docker
     needs: tests
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -72,36 +71,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # === CORRECTION ICI ===
-      # Nous avons besoin de 3 étapes de build, une pour chaque image.
-
-      - name: Build and push API
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile.api  # On spécifie le bon fichier
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mlops-api:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Build and push WebApp
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile.webapp # On spécifie le bon fichier
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mlops-webapp:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-      
-      - name: Build and push Airflow
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile.airflow # On spécifie le bon fichier
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mlops-airflow:latest
+          tags: |
+            ${{ env.DOCKER_IMAGE }}:latest
+            ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+          # si tu veux accélérer et éviter d'installer deps système à chaque fois, ajoute un cache:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -112,21 +90,17 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Pull latest images
+      - name: Pull latest image
         run: |
-          # On pull les 3 images
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mlops-api:latest
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mlops-webapp:latest
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mlops-airflow:latest
+          docker pull ${{ env.DOCKER_IMAGE }}:latest
 
-      # Cette partie est trop simple, elle ne déploie qu'une app
-      # Vous devrez l'adapter pour déployer K8s (kubectl apply -f k8s/)
-      - name: Recreate container (Exemple)
+      # Adapte ces commandes à ton infra (docker run / docker compose)
+      - name: Recreate container
         run: |
-          echo "Le déploiement doit être adapté pour Kubernetes"
-          # Exemple pour l'API:
-          docker rm -f api || true
-          docker run -d --name api \
-            -p 8000:8000 \
+          # Arrête et supprime l'ancien conteneur s'il existe
+          docker rm -f app || true
+          # Lance le nouveau conteneur (exemple, adapte ports/vars)
+          docker run -d --name app \
+            -p 8080:8080 \
             --env-file .env \
-            ${{ secrets.DOCKERHUB_USERNAME }}/mlops-api:latest
+            ${{ env.DOCKER_IMAGE }}:latest
