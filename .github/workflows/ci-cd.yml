@@ -7,15 +7,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
-# Pas besoin de cette variable globale, nous la définirons dans chaque job
-# env:
-#   DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/mlops-dandelion-grass-classification
-
 jobs:
   tests:
     name: Run Tests
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,7 +20,6 @@ jobs:
         with:
           python-version: '3.10'
 
-      # (Optionnel) cache pip pour accélérer
       - name: Cache pip
         uses: actions/cache@v4
         with:
@@ -42,9 +36,7 @@ jobs:
 
       - name: Install project dependencies (freeze, w/o torch/vision)
         run: |
-          # retirer torch/vision du freeze pour éviter qu'ils soient réinstallés
           awk 'tolower($0) !~ /^torch==/ && tolower($0) !~ /^torchvision==/' requirements_freeze.txt > requirements_freeze_no_torch.txt
-          # forcer les roues binaires quand c'est possible (moins de build from source)
           pip install -r requirements_freeze_no_torch.txt --only-binary=:all: --no-cache-dir --progress-bar off
 
       - name: Run pytest
@@ -58,7 +50,6 @@ jobs:
     needs: tests
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -106,27 +97,16 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy:
-    name: Deploy (self-hosted)
+    name: Deploy to Kubernetes (self-hosted)
     needs: build_and_push
     runs-on: self-hosted
     if: github.ref == 'refs/heads/main'
-
     steps:
-      - name: Pull latest images
-        run: |
-          # On pull les 3 images
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mlops-api:latest
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mlops-webapp:latest
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/mlops-airflow:latest
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # Cette partie est trop simple, elle ne déploie qu'une app
-      # Vous devrez l'adapter pour déployer K8s (kubectl apply -f k8s/)
-      - name: Recreate container (Exemple)
+      - name: Deploy to K8s
         run: |
-          echo "Le déploiement doit être adapté pour Kubernetes"
-          # Exemple pour l'API:
-          docker rm -f api || true
-          docker run -d --name api \
-            -p 8000:8000 \
-            --env-file .env \
-            ${{ secrets.DOCKERHUB_USERNAME }}/mlops-api:latest
+          echo "Application des manifestes Kubernetes..."
+          # C'est la commande correcte pour votre projet
+          kubectl apply -f k8s/
