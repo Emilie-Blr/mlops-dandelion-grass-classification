@@ -308,7 +308,7 @@ pycurl==7.45.6
 pydantic==2.10.3
 pydantic_core==2.27.1
 pydantic-settings==2.11.0
-PyDispatcher==2.0.5
+PyDispatcher==2.0.7
 pydocstyle==6.3.0
 pydyf==0.11.0
 pyerfa==2.0.1.5
