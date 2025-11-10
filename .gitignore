@@ -88,15 +88,8 @@ minio-data/
 *.sqlite
 postgres-data/
 
-# Datasets (too large for git)
-data/dandelion/*.jpg
-data/grass/*.jpg
-models/downloaded/*.pth
-
 # ========== OPTIMISATION ==========
 # Large model files (>100MB - GitHub limit)
-models/*.pth
-models/downloaded/*.pth
 
 # MLflow artifacts (reproductibles)
 mlruns/
