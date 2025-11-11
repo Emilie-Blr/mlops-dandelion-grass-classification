@@ -13,9 +13,12 @@ Ce projet implémente un **pipeline MLOps complet** pour la classification d'ima
 ✅ **Objectif 4**: Tracking des modèles et expériences avec MLflow  
 ✅ **Objectif 5**: API REST pour les prédictions (FastAPI)  
 ✅ **Objectif 6**: Interface utilisateur interactive (Streamlit)  
-🔄 **Objectif 7**: Dockerisation et déploiement Kubernetes  
-🔄 **Objectif 9**: Continuous Training automatisé  
-🔄 **Objectif 10**: Monitoring avec Prometheus + Grafana  
+✅ **Objectif 7**: Dockerisation et déploiement Kubernetes  
+✅ **Objectif 9**: Continuous Training automatisé  
+✅ **Objectif 10**: Monitoring avec Prometheus + Grafana
+✅**Objectif 11**: Use a feature store
+✅**Objectif 12**: Add load tests (Locust).
+✅**Objectif 13**: Add Airflow DAGs to do Continuous Training (CT)
 
 **Date limite**: Dimanche 2 novembre 2025 à minuit  
 **Présentation**: 10min démo + 15min Q&A  
