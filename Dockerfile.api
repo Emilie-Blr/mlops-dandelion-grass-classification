@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
 
 # Copy requirements (API only - minimal dependencies)
 COPY requirements-api.txt .
-RUN pip install --no-cache-dir -r requirements-api.txt
+RUN pip install --no-cache-dir --default-timeout=1000 -r requirements-api.txt
 
 # Copy source code
 COPY src/ ./src/

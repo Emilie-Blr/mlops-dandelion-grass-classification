@@ -33,12 +33,28 @@ HISTORY_FILE = Path("data/prediction_history.json")
 
 
 # ==================== MODEL FUNCTIONS ====================
+class DandelionGrassClassifier(nn.Module):
+    def __init__(self, num_classes=2):
+        super().__init__()
+        # On recrée exactement la même structure que lors de l'entraînement
+        self.backbone = models.resnet18(weights=None)
+        num_ftrs = self.backbone.fc.in_features
+        
+        # La "tête" du modèle doit correspondre à celle définie dans training/model.py
+        self.backbone.fc = nn.Sequential(
+            nn.Dropout(0.5),
+            nn.Linear(num_ftrs, 256),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(256, num_classes)
+        )
+    
+    def forward(self, x):
+        return self.backbone(x)
+
 def create_model(num_classes=2):
-    """Create ResNet18 model"""
-    model = models.resnet18(weights=None)
-    num_ftrs = model.fc.in_features
-    model.fc = nn.Linear(num_ftrs, num_classes)
-    return model
+    """Create the custom model structure"""
+    return DandelionGrassClassifier(num_classes=num_classes)
 
 
 @st.cache_resource

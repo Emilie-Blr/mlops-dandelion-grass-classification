@@ -93,12 +93,12 @@ def load_data_from_minio() -> Tuple[list, list]:
     image_paths = []
     labels = []
     
-    # Get dandelion images
+    # Get dandelion images - ✅ SIMPLIFIÉ (minio_client.list_objects retourne déjà des strings)
     dandelion_images = minio_client.list_objects(settings.S3_BUCKET_DATA, prefix="dandelion/")
     image_paths.extend(dandelion_images)
     labels.extend([0] * len(dandelion_images))
     
-    # Get grass images
+    # Get grass images - ✅ SIMPLIFIÉ (minio_client.list_objects retourne déjà des strings)
     grass_images = minio_client.list_objects(settings.S3_BUCKET_DATA, prefix="grass/")
     image_paths.extend(grass_images)
     labels.extend([1] * len(grass_images))
@@ -202,13 +202,13 @@ def train():
         train_dataset, 
         batch_size=settings.BATCH_SIZE, 
         shuffle=True, 
-        num_workers=2
+        num_workers=0  # ✅ 0 pour éviter les problèmes de shared memory dans Docker
     )
     val_loader = DataLoader(
         val_dataset, 
         batch_size=settings.BATCH_SIZE, 
         shuffle=False, 
-        num_workers=2
+        num_workers=0  # ✅ 0 pour éviter les problèmes de shared memory dans Docker
     )
     
     # Create model
@@ -267,6 +267,10 @@ def train():
             # Save best model
             if val_acc > best_val_acc:
                 best_val_acc = val_acc
+                
+                # ✅ Créer le dossier s'il n'existe pas
+                settings.MODELS_DIR.mkdir(parents=True, exist_ok=True)
+                
                 model_path = settings.MODELS_DIR / f"{settings.MODEL_NAME}_best.pth"
                 save_model(model, str(model_path))
                 logger.success(f"✅ Saved best model with accuracy: {val_acc*100:.2f}%")

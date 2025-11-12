@@ -83,19 +83,21 @@ def main():
     create_bucket_if_not_exists(client, BUCKET_NAME)
     
     # Upload dandelion images
+    # ✅ MODIFIÉ: "dandelion" au lieu de "images/dandelion"
     dandelion_count = upload_images(
         client, 
         DANDELION_DIR, 
         BUCKET_NAME, 
-        "images/dandelion"
+        "dandelion"
     )
     
     # Upload grass images
+    # ✅ MODIFIÉ: "grass" au lieu de "images/grass"
     grass_count = upload_images(
         client, 
         GRASS_DIR, 
         BUCKET_NAME, 
-        "images/grass"
+        "grass"
     )
     
     # Summary

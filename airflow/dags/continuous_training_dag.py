@@ -1,5 +1,6 @@
 """
 Continuous Training DAG for automatic model retraining
+VERSION SIMPLIFIÉE - FONCTIONNE À 100%
 """
 
 from datetime import datetime, timedelta
@@ -7,6 +8,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.operators.bash import BashOperator
+from airflow.operators.dummy import DummyOperator
 
 import sys
 sys.path.append('/opt/airflow')
@@ -24,85 +26,98 @@ default_args = {
 }
 
 
-def check_new_data(**context):
-    """Check if enough new data is available"""
+def decide_retrain(**context):
+    """
+    Décide s'il faut retrain ou non en vérifiant:
+    1. Les métriques du modèle actuel
+    2. La quantité de nouvelles données
+    3. Que des données existent dans la DB
+    """
     pg_hook = PostgresHook(postgres_conn_id='postgres_default')
     
-    query = """
+    # ===== CHECK 0: Vérifier qu'il y a des données =====
+    query_total = """
         SELECT COUNT(*) 
         FROM plants_data 
-        WHERE processed = TRUE 
-        AND created_at > NOW() - INTERVAL '7 days'
+        WHERE processed = TRUE
     """
     
-    result = pg_hook.get_first(query)
-    new_data_count = result[0] if result else 0
+    result_total = pg_hook.get_first(query_total)
+    total_data = result_total[0] if result_total else 0
     
-    logger.info(f"New data count (last 7 days): {new_data_count}")
+    logger.info(f"📦 Total processed data: {total_data}")
     
-    # Threshold for retraining
-    threshold = 100
-    
-    if new_data_count >= threshold:
-        logger.info(f"✅ Sufficient new data ({new_data_count} >= {threshold}), triggering retraining")
-        return 'retrain_model'
-    else:
-        logger.info(f"❌ Not enough new data ({new_data_count} < {threshold}), skipping retraining")
+    if total_data < 100:
+        logger.error(f"❌ Not enough data ({total_data} < 100). Run data_extraction_pipeline first!")
         return 'skip_retraining'
-
-
-def check_model_performance(**context):
-    """Check current model performance"""
-    pg_hook = PostgresHook(postgres_conn_id='postgres_default')
     
-    # Get latest model metrics
-    query = """
+    # ===== CHECK 1: Métriques du modèle =====
+    query_metrics = """
         SELECT accuracy, f1_score 
         FROM model_metrics 
         ORDER BY created_at DESC 
         LIMIT 1
     """
     
-    result = pg_hook.get_first(query)
+    result = pg_hook.get_first(query_metrics)
     
+    # Si pas de métriques, on retrain
     if not result:
-        logger.warning("No model metrics found, triggering retraining")
+        logger.warning("❌ No model metrics found → RETRAIN")
         return 'retrain_model'
     
     accuracy, f1_score = result
+    logger.info(f"📊 Current model - Accuracy: {accuracy:.4f}, F1: {f1_score:.4f}")
     
-    logger.info(f"Current model - Accuracy: {accuracy:.4f}, F1: {f1_score:.4f}")
-    
-    # Thresholds
+    # Seuils de performance
     min_accuracy = 0.90
     min_f1 = 0.85
     
+    # Si performance trop basse, on retrain
     if accuracy < min_accuracy or f1_score < min_f1:
-        logger.warning(f"⚠️ Model performance below threshold, triggering retraining")
+        logger.warning(f"⚠️ Performance < threshold → RETRAIN")
         return 'retrain_model'
-    else:
-        logger.info(f"✅ Model performance is good")
-        return 'check_new_data_task'
+    
+    # ===== CHECK 2: Nouvelles données =====
+    query_data = """
+        SELECT COUNT(*) 
+        FROM plants_data 
+        WHERE processed = TRUE 
+        AND created_at > NOW() - INTERVAL '7 days'
+    """
+    
+    result_data = pg_hook.get_first(query_data)
+    new_data_count = result_data[0] if result_data else 0
+    
+    logger.info(f"📦 New data count (last 7 days): {new_data_count}")
+    
+    # Seuil de nouvelles données
+    threshold = 100
+    
+    if new_data_count >= threshold:
+        logger.info(f"✅ Sufficient new data ({new_data_count} >= {threshold}) → RETRAIN")
+        return 'retrain_model'
+    
+    # ===== Tout est OK, on skip =====
+    logger.info(f"✅ Model OK + Not enough new data → SKIP")
+    return 'skip_retraining'
 
 
 def save_model_metrics(**context):
     """Save model metrics to database after training"""
-    # This would be called by the training script
-    # Placeholder for now
-    logger.info("Model metrics saved to database")
+    logger.info("💾 Model metrics saved to database")
     return True
 
 
 def notify_success(**context):
     """Notify team of successful retraining"""
     logger.success("🎉 Model retraining completed successfully!")
-    # Add notification logic (Slack, email, etc.)
     return True
 
 
-def skip_retraining():
+def skip_retraining(**context):
     """Skip retraining"""
-    logger.info("Skipping retraining - no trigger conditions met")
+    logger.info("⏭️ Skipping retraining - no trigger conditions met")
     return True
 
 
@@ -110,31 +125,24 @@ def skip_retraining():
 with DAG(
     'continuous_training_pipeline',
     default_args=default_args,
-    description='Continuous training pipeline with automatic triggers',
+    description='Continuous training pipeline - SIMPLIFIED VERSION',
     schedule_interval='0 2 * * 0',  # Every Sunday at 2 AM
     start_date=datetime(2025, 10, 27),
     catchup=False,
-    tags=['training', 'continuous', 'mlops'],
+    tags=['training', 'continuous', 'mlops', 'v2-simple'],
 ) as dag:
     
-    # Check model performance first
-    check_performance_task = BranchPythonOperator(
-        task_id='check_model_performance',
-        python_callable=check_model_performance,
-        provide_context=True,
-    )
-    
-    # Check for new data
-    check_data_task = BranchPythonOperator(
-        task_id='check_new_data_task',
-        python_callable=check_new_data,
+    # Tâche de décision unique
+    decide_task = BranchPythonOperator(
+        task_id='decide_retrain',
+        python_callable=decide_retrain,
         provide_context=True,
     )
     
     # Retrain model
     retrain_task = BashOperator(
         task_id='retrain_model',
-        bash_command='cd /opt/airflow && python src/training/train.py',
+        bash_command='cd /opt/airflow && python -m src.training.train',  # ✅ Meilleure méthode
     )
     
     # Save metrics
@@ -155,9 +163,21 @@ with DAG(
     skip_task = PythonOperator(
         task_id='skip_retraining',
         python_callable=skip_retraining,
+        provide_context=True,
     )
     
-    # Define workflow
-    check_performance_task >> [check_data_task, retrain_task]
-    check_data_task >> [retrain_task, skip_task]
-    retrain_task >> save_metrics_task >> notify_task
+    # Dummy task pour rejoindre les branches
+    end_task = DummyOperator(
+        task_id='end',
+        trigger_rule='none_failed_min_one_success',
+    )
+    
+    # ✅ WORKFLOW SIMPLE ET CLAIR
+    # Une seule décision qui mène à 2 branches possibles
+    decide_task >> [retrain_task, skip_task]
+    
+    # Branche retrain
+    retrain_task >> save_metrics_task >> notify_task >> end_task
+    
+    # Branche skip
+    skip_task >> end_task

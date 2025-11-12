@@ -48,7 +48,7 @@ def main():
         subprocess.run([
             "streamlit", "run",
             str(app_path),
-            "--server.port=8501",
+            "--server.port=8502",
             "--server.address=localhost",
             "--browser.gatherUsageStats=false",
             "--theme.base=dark"

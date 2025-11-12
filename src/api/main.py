@@ -20,6 +20,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from loguru import logger
 
 from src.config import settings
+from src.training.model import DandelionGrassClassifier
 
 
 # Initialize FastAPI app
@@ -48,29 +49,31 @@ class_names = ["dandelion", "grass"]
 
 
 def create_model(num_classes=2):
-    """Create ResNet18 model"""
-    model = models.resnet18(weights=None)
-    num_ftrs = model.fc.in_features
-    model.fc = nn.Linear(num_ftrs, num_classes)
+    """Create DandelionGrassClassifier model"""
+    model = DandelionGrassClassifier(pretrained=False, num_classes=num_classes)
     return model
 
 
 def load_model_from_checkpoint(model_path: str, device: torch.device):
     """Load model from checkpoint file"""
     model = create_model(num_classes=2)
+    
+    # Load state dict
     checkpoint = torch.load(model_path, map_location=device)
     
     # Handle different checkpoint formats
     if isinstance(checkpoint, dict):
         if 'model_state_dict' in checkpoint:
-            model.load_state_dict(checkpoint['model_state_dict'])
+            state_dict = checkpoint['model_state_dict']
         elif 'state_dict' in checkpoint:
-            model.load_state_dict(checkpoint['state_dict'])
+            state_dict = checkpoint['state_dict']
         else:
-            model.load_state_dict(checkpoint)
+            state_dict = checkpoint
     else:
-        model.load_state_dict(checkpoint)
+        state_dict = checkpoint
     
+    # Load the state dict directly (no need to remove prefix since we're using the same class)
+    model.load_state_dict(state_dict)
     model.to(device)
     model.eval()
     return model
