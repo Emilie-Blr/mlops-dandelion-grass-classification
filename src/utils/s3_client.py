@@ -199,4 +199,4 @@ def get_minio_client():
     return _minio_client
 
 # For backward compatibility
-minio_client = None  # Will be initialized on first use
+minio_client = get_minio_client()

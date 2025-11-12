@@ -10,13 +10,12 @@ RUN apt-get update && \
 
 USER airflow
 
-# Copy requirements
+# Copie et installation des requirements
 COPY requirements.txt /requirements.txt
-
-# Install Python dependencies
 RUN pip install --no-cache-dir -r /requirements.txt
 
-# Install additional Airflow providers
-RUN pip install --no-cache-dir \
+# Installation des providers Airflow
+# On force urllib3 une dernière fois ici pour être sûr que les providers ne le mettent pas à jour
+RUN pip install --no-cache-dir "urllib3<2.0" \
     apache-airflow-providers-postgres \
     apache-airflow-providers-amazon

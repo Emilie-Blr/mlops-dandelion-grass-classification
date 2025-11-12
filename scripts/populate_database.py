@@ -13,7 +13,7 @@ from loguru import logger
 DB_USER = os.getenv("DB_USER", "mlops_user")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "mlops_password")
 DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "5432")
+DB_PORT = os.getenv("DB_PORT", "5433")
 DB_NAME = os.getenv("DB_NAME", "mlops_db")
 
 DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
