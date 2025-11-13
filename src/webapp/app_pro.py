@@ -139,7 +139,7 @@ def create_confidence_chart(probs, class_names, dark_mode=False):
     
     fig.update_layout(
         title=dict(
-            text="📊 Confidence Score",
+            text="Confidence Score",
             font=dict(size=20, color='white' if dark_mode else 'black', family='Arial Black')
         ),
         xaxis_title="Confidence (%)",
@@ -214,7 +214,7 @@ def create_history_chart(history_df, dark_mode=False):
         color='predicted_class',
         size='confidence',
         hover_data=['confidence'],
-        title='📈 Prediction History',
+        title='Prediction History',
         color_discrete_map={'dandelion': CLASS_COLORS['Dandelion'], 'grass': CLASS_COLORS['Grass']}
     )
     
@@ -484,20 +484,20 @@ def main():
         
         # Mode Selection
         app_mode = st.radio(
-            "🎯 Select Mode",
-            ["📤 Single Image", "📸 Webcam (Coming Soon)", "📁 Batch Processing", "📊 History & Stats"],
+            "Select Mode",
+            ["Single Image", "Webcam (Coming Soon)", "Batch Processing", "History & Stats"],
             index=0
         )
         
         st.markdown("---")
         
         # API Settings
-        use_api = st.checkbox("🌐 Use API", value=False, help="Use FastAPI backend for predictions")
+        use_api = st.checkbox("Use API", value=False, help="Use FastAPI backend for predictions")
         
         if use_api:
             api_url = st.text_input("API URL", value=API_URL)
             
-            if st.button("🔍 Test Connection", use_container_width=True):
+            if st.button("Test Connection", use_container_width=True):
                 with st.spinner("Testing..."):
                     try:
                         response = requests.get(f"{api_url}/health", timeout=5)
@@ -508,17 +508,17 @@ def main():
                     except Exception as e:
                         st.error(f"❌ Connection failed")
         else:
-            st.info("📱 Local Model Mode")
+            st.info("Local Model Mode")
             if MODEL_PATH.exists():
                 model_size = MODEL_PATH.stat().st_size / (1024 * 1024)
-                st.success(f"✅ Model loaded ({model_size:.1f} MB)")
+                st.success(f"Model loaded ({model_size:.1f} MB)")
             else:
-                st.warning(f"⚠️ Model not found")
+                st.warning(f"Model not found")
         
         st.markdown("---")
         
         # Model Info
-        st.markdown("### 🤖 Model Info")
+        st.markdown("### Model Info")
         col_a, col_b = st.columns(2)
         with col_a:
             st.markdown("""
@@ -536,7 +536,7 @@ def main():
         # Quick Stats
         stats = get_history_stats()
         if stats:
-            st.markdown("### 📈 Quick Stats")
+            st.markdown("### Quick Stats")
             st.metric("Total Predictions", stats['total_predictions'])
             st.metric("Avg Confidence", f"{stats['avg_confidence']*100:.1f}%")
             st.metric("Avg Time", f"{stats['avg_time']:.3f}s")
@@ -544,8 +544,8 @@ def main():
         st.markdown("---")
         st.markdown("""
         <div style='text-align: center; font-size: 11px;'>
-            <p>🚀 MLOps Project PRO 2025</p>
-            <p>Made with ❤️ using Streamlit</p>
+            <p>MLOps Project PRO 2025</p>
+            <p>Made with using Streamlit</p>
         </div>
         """, unsafe_allow_html=True)
     
@@ -555,16 +555,16 @@ def main():
     st.markdown("---")
     
     # ==================== MAIN CONTENT ====================
-    if app_mode == "📤 Single Image":
+    if app_mode == "Single Image":
         render_single_image_mode(use_api, api_url if use_api else None)
     
-    elif app_mode == "📸 Webcam (Coming Soon)":
+    elif app_mode == "Webcam (Coming Soon)":
         render_webcam_mode()
     
-    elif app_mode == "📁 Batch Processing":
+    elif app_mode == "Batch Processing":
         render_batch_mode(use_api, api_url if use_api else None)
     
-    elif app_mode == "📊 History & Stats":
+    elif app_mode == "History & Stats":
         render_history_mode()
 
 
@@ -574,7 +574,7 @@ def render_single_image_mode(use_api, api_url):
     col1, col2 = st.columns([1.2, 1], gap="large")
     
     with col1:
-        st.markdown("### 📤 Upload Image")
+        st.markdown("### Upload Image")
         
         uploaded_file = st.file_uploader(
             "Drag and drop or click to upload", 
@@ -584,10 +584,10 @@ def render_single_image_mode(use_api, api_url):
         
         if uploaded_file is not None:
             image = Image.open(uploaded_file).convert('RGB')
-            st.image(image, caption="📷 Uploaded Image", use_container_width=True)
+            st.image(image, caption="Uploaded Image", use_container_width=True)
             
             # Image enhancement options
-            with st.expander("🎨 Image Adjustments (Optional)"):
+            with st.expander("Image Adjustments (Optional)"):
                 brightness = st.slider("Brightness", 0.5, 2.0, 1.0, 0.1)
                 contrast = st.slider("Contrast", 0.5, 2.0, 1.0, 0.1)
                 
@@ -596,28 +596,28 @@ def render_single_image_mode(use_api, api_url):
                     image = enhancer.enhance(brightness)
                     enhancer = ImageEnhance.Contrast(image)
                     image = enhancer.enhance(contrast)
-                    st.image(image, caption="✨ Enhanced Image", use_container_width=True)
+                    st.image(image, caption="Enhanced Image", use_container_width=True)
             
             # Image info
             file_size = uploaded_file.size / 1024
             st.markdown(f"""
             <div class='metric-card'>
-                <strong>📊 Image Info</strong><br>
-                📏 Size: {image.size[0]}x{image.size[1]}<br>
-                💾 File: {file_size:.1f} KB<br>
-                🎨 Format: {image.format}<br>
-                🌈 Mode: {image.mode}
+                <strong>Image Info</strong><br>
+                Size: {image.size[0]}x{image.size[1]}<br>
+                File: {file_size:.1f} KB<br>
+                Format: {image.format}<br>
+                Mode: {image.mode}
             </div>
             """, unsafe_allow_html=True)
     
     with col2:
-        st.markdown("### 🎯 Prediction Result")
+        st.markdown("### Prediction Result")
         
         if uploaded_file is not None:
-            predict_button = st.button("🔮 Classify Now!", type="primary", use_container_width=True)
+            predict_button = st.button("Classify Now!", type="primary", use_container_width=True)
             
             if predict_button:
-                with st.spinner("🤖 Analyzing image..."):
+                with st.spinner("Analyzing image..."):
                     progress_bar = st.progress(0)
                     for i in range(100):
                         time.sleep(0.01)
@@ -683,7 +683,7 @@ def render_single_image_mode(use_api, api_url):
                         """, unsafe_allow_html=True)
                         
                         # Confidence visualization
-                        tab1, tab2 = st.tabs(["📊 Bar Chart", "🎯 Gauge"])
+                        tab1, tab2 = st.tabs(["Bar Chart", "Gauge"])
                         
                         with tab1:
                             st.plotly_chart(
@@ -698,32 +698,32 @@ def render_single_image_mode(use_api, api_url):
                             )
                         
                         # Detailed info
-                        with st.expander("📊 Detailed Analysis"):
+                        with st.expander("Detailed Analysis"):
                             col_a, col_b = st.columns(2)
                             
                             with col_a:
                                 st.metric("🌼 Dandelion", f"{probs[0]*100:.2f}%", 
                                          delta=f"{(probs[0]-0.5)*100:.1f}%" if probs[0] > 0.5 else None)
-                                st.metric("⏱️ Inference Time", f"{prediction_time*1000:.1f} ms")
+                                st.metric("Inference Time", f"{prediction_time*1000:.1f} ms")
                             
                             with col_b:
                                 st.metric("🌿 Grass", f"{probs[1]*100:.2f}%",
                                          delta=f"{(probs[1]-0.5)*100:.1f}%" if probs[1] > 0.5 else None)
                                 device_name = 'GPU (MPS)' if torch.backends.mps.is_available() else 'GPU (CUDA)' if torch.cuda.is_available() else 'CPU'
-                                st.metric("🖥️ Device", device_name)
+                                st.metric("Device", device_name)
                         
                         st.success("✅ Classification complete!")
                         st.balloons()
                         
                     except Exception as e:
                         st.error(f"❌ Error: {str(e)}")
-                        with st.expander("🔍 Error Details"):
+                        with st.expander("Error Details"):
                             st.exception(e)
         else:
-            st.info("👆 Upload an image to get started")
+            st.info("Upload an image to get started")
             
             # Example section
-            st.markdown("### 📸 What to Upload?")
+            st.markdown("### What to Upload?")
             
             ex_col1, ex_col2 = st.columns(2)
             with ex_col1:
@@ -753,7 +753,7 @@ def render_single_image_mode(use_api, api_url):
 
 def render_webcam_mode():
     """Render webcam mode (placeholder)"""
-    st.markdown("### 📸 Webcam Mode")
+    st.markdown("### Webcam Mode")
     
     st.info("🚧 Coming Soon! This feature will allow real-time classification using your webcam.")
     
@@ -761,11 +761,11 @@ def render_webcam_mode():
     <div class='metric-card'>
         <h3>Planned Features:</h3>
         <ul style='text-align: left;'>
-            <li>✨ Real-time video feed</li>
-            <li>🎯 Live predictions</li>
-            <li>📊 Confidence tracking</li>
-            <li>💾 Snapshot capture</li>
-            <li>📹 Record & save results</li>
+            <li>Real-time video feed</li>
+            <li>Live predictions</li>
+            <li>Confidence tracking</li>
+            <li>Snapshot capture</li>
+            <li>Record & save results</li>
         </ul>
     </div>
     """, unsafe_allow_html=True)
@@ -775,7 +775,7 @@ def render_webcam_mode():
 
 def render_batch_mode(use_api, api_url):
     """Render batch processing mode"""
-    st.markdown("### 📁 Batch Processing")
+    st.markdown("### Batch Processing")
     st.markdown("Upload multiple images for bulk classification")
     
     uploaded_files = st.file_uploader(
@@ -788,7 +788,7 @@ def render_batch_mode(use_api, api_url):
     if uploaded_files:
         st.success(f"✅ {len(uploaded_files)} images uploaded")
         
-        if st.button("🚀 Process All Images", type="primary", use_container_width=True):
+        if st.button("Process All Images", type="primary", use_container_width=True):
             results = []
             
             progress_text = "Processing images..."
@@ -884,17 +884,17 @@ def render_batch_mode(use_api, api_url):
                     use_container_width=True
                 )
     else:
-        st.info("👆 Upload multiple images to start batch processing")
+        st.info("Upload multiple images to start batch processing")
 
 
 def render_history_mode():
     """Render history and statistics mode"""
-    st.markdown("### 📊 Prediction History & Statistics")
+    st.markdown("### Prediction History & Statistics")
     
     history = load_history()
     
     if not history:
-        st.info("📭 No predictions yet. Start classifying images to see statistics!")
+        st.info("No predictions yet. Start classifying images to see statistics!")
         return
     
     df = pd.DataFrame(history)
@@ -903,7 +903,7 @@ def render_history_mode():
     # Statistics overview
     stats = get_history_stats()
     
-    st.markdown("### 📈 Overview")
+    st.markdown("### Overview")
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
@@ -941,13 +941,13 @@ def render_history_mode():
     st.markdown("---")
     
     # Timeline chart
-    st.markdown("### 📈 Prediction Timeline")
+    st.markdown("### Prediction Timeline")
     fig = create_history_chart(df, st.session_state.dark_mode)
     if fig:
         st.plotly_chart(fig, use_container_width=True)
     
     # Distribution pie chart
-    st.markdown("### 🥧 Class Distribution")
+    st.markdown("### Class Distribution")
     fig = px.pie(
         values=[stats['dandelion_count'], stats['grass_count']],
         names=['Dandelion 🌼', 'Grass 🌿'],
@@ -964,7 +964,7 @@ def render_history_mode():
     st.markdown("---")
     
     # Recent predictions table
-    st.markdown("### 📋 Recent Predictions")
+    st.markdown("### Recent Predictions")
     
     display_df = df.copy()
     display_df['timestamp'] = display_df['timestamp'].dt.strftime('%Y-%m-%d %H:%M:%S')
@@ -979,7 +979,7 @@ def render_history_mode():
     
     # Clear history button
     st.markdown("---")
-    if st.button("🗑️ Clear History", type="secondary", use_container_width=True):
+    if st.button("Clear History", type="secondary", use_container_width=True):
         if HISTORY_FILE.exists():
             HISTORY_FILE.unlink()
         st.rerun()

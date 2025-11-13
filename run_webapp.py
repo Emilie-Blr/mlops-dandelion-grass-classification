@@ -17,14 +17,14 @@ if __name__ == "__main__":
     webapp_path = project_root / "src" / "webapp" / "app_enhanced.py"
     
     print("🌼 Starting Streamlit WebApp...")
-    print(f"📂 App location: {webapp_path}")
-    print("🌐 Local URL: http://localhost:8501")
-    print("📚 Features:")
+    print(f"App location: {webapp_path}")
+    print("Local URL: http://localhost:8501")
+    print("Features:")
     print("   - Upload images for classification")
     print("   - Real-time predictions")
     print("   - Confidence scores visualization")
     print("   - Local model or API backend")
-    print("\n🚀 Launching...")
+    print("\nLaunching...")
     print("-" * 60)
     
     subprocess.run([

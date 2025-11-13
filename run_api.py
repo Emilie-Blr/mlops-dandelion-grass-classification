@@ -14,9 +14,9 @@ if __name__ == "__main__":
     import uvicorn
     from src.api.main import app
     
-    print("🚀 Starting API server on http://0.0.0.0:8000")
-    print("📚 Swagger docs available at http://localhost:8000/docs")
-    print("📖 ReDoc available at http://localhost:8000/redoc")
+    print("Starting API server on http://0.0.0.0:8000")
+    print("Swagger docs available at http://localhost:8000/docs")
+    print("ReDoc available at http://localhost:8000/redoc")
     
     uvicorn.run(
         app,

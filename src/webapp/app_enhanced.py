@@ -168,7 +168,7 @@ st.markdown("---")
 with st.sidebar:
     st.header("⚙️ Settings")
     
-    use_api = st.checkbox("🌐 Use API", value=False, help="Use FastAPI backend for predictions")
+    use_api = st.checkbox("Use API", value=False, help="Use FastAPI backend for predictions")
     
     if use_api:
         api_url = st.text_input("API URL", value=API_URL)
@@ -192,7 +192,7 @@ with st.sidebar:
             st.warning(f"⚠️ Model not found at {MODEL_PATH}")
     
     st.markdown("---")
-    st.markdown("### 📊 Model Info")
+    st.markdown("### Model Info")
     st.markdown("""
     - **Architecture**: ResNet18
     - **Classes**: 2 (Dandelion, Grass)
@@ -201,7 +201,7 @@ with st.sidebar:
     """)
     
     st.markdown("---")
-    st.markdown("### 📝 Instructions")
+    st.markdown("### Instructions")
     st.markdown("""
     1. Upload an image (JPG/PNG)
     2. Wait for classification
@@ -211,7 +211,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("""
     <div style='text-align: center; font-size: 12px;'>
-        <p>🚀 MLOps Project 2025</p>
+        <p>MLOps Project 2025</p>
         <p>Built with Streamlit & PyTorch</p>
     </div>
     """, unsafe_allow_html=True)
@@ -220,7 +220,7 @@ with st.sidebar:
 col1, col2 = st.columns([1, 1], gap="large")
 
 with col1:
-    st.markdown("### 📤 Upload Image")
+    st.markdown("### Upload Image")
     
     uploaded_file = st.file_uploader(
         "Choose an image...", 
@@ -230,7 +230,7 @@ with col1:
     
     if uploaded_file is not None:
         image = Image.open(uploaded_file).convert('RGB')
-        st.image(image, caption="📷 Uploaded Image", use_column_width=True)
+        st.image(image, caption="Uploaded Image", use_column_width=True)
         
         # Image info
         st.markdown(f"""
@@ -243,13 +243,13 @@ with col1:
         """, unsafe_allow_html=True)
 
 with col2:
-    st.markdown("### 🎯 Prediction Result")
+    st.markdown("### Prediction Result")
     
     if uploaded_file is not None:
-        predict_button = st.button("🔮 Classify Image", type="primary", use_container_width=True)
+        predict_button = st.button("Classify Image", type="primary", use_container_width=True)
         
         if predict_button:
-            with st.spinner("🤖 Analyzing image..."):
+            with st.spinner("Analyzing image..."):
                 start_time = time.time()
                 
                 try:
@@ -299,7 +299,7 @@ with col2:
                             <strong>Confidence: {confidence * 100:.2f}%</strong>
                         </p>
                         <p style='text-align: center; font-size: 16px; color: #666; margin: 5px 0;'>
-                            ⏱️ Prediction time: {prediction_time:.3f}s
+                            Prediction time: {prediction_time:.3f}s
                         </p>
                     </div>
                     """, unsafe_allow_html=True)
@@ -314,7 +314,7 @@ with col2:
                     )
                     
                     # Additional details
-                    with st.expander("📊 Detailed Information"):
+                    with st.expander("Detailed Information"):
                         col_a, col_b, col_c = st.columns(3)
                         
                         with col_a:
@@ -342,10 +342,10 @@ with col2:
                     with st.expander("See error details"):
                         st.exception(e)
     else:
-        st.info("👆 Please upload an image to get started")
+        st.info("Please upload an image to get started")
         
         # Show example images
-        st.markdown("### 📸 Example Images")
+        st.markdown("### Example Images")
         st.markdown("Try uploading images that look like these:")
         
         ex_col1, ex_col2 = st.columns(2)
@@ -366,7 +366,7 @@ st.markdown("---")
 st.markdown("""
 <div style='text-align: center; padding: 20px;'>
     <p style='font-size: 14px; color: #666;'>
-        🚀 <strong>MLOps Project</strong> - Dandelion vs Grass Classification
+        <strong>MLOps Project</strong> - Dandelion vs Grass Classification
     </p>
     <p style='font-size: 12px; color: #999;'>
         Powered by PyTorch, FastAPI, MLflow & Streamlit

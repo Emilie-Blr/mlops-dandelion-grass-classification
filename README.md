@@ -5,7 +5,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104-green.svg)](https://fastapi.tiangolo.com/)
 [![License](https://img.shields.io/badge/License-Educational-yellow.svg)]()
 
-## 📝 Description
+## Description
 
 Ce projet implémente un **pipeline MLOps complet** pour la classification d'images binaire (pissenlit 🌼 vs herbe 🌿) avec :
 
@@ -23,7 +23,7 @@ Ce projet implémente un **pipeline MLOps complet** pour la classification d'ima
 **Date limite**: Dimanche 2 novembre 2025 à minuit  
 **Présentation**: 10min démo + 15min Q&A  
 
-## 👥 Équipe (Groupe 5)
+## Équipe (Groupe 5)
 
 - Emilie BOULANGER
 - Hugo BRAUN  
@@ -31,7 +31,7 @@ Ce projet implémente un **pipeline MLOps complet** pour la classification d'ima
 - Maria BOUSSA
 - Sara BEN ABDELKADER
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────┐      ┌──────────────┐      ┌─────────────┐
@@ -52,7 +52,7 @@ Ce projet implémente un **pipeline MLOps complet** pour la classification d'ima
 └─────────────────────────────────────────────────────────┘
 ```
 
-## 📚 Stack Technologique
+## Stack Technologique
 
 | Composant | Technologie |
 |-----------|-------------|
@@ -69,7 +69,7 @@ Ce projet implémente un **pipeline MLOps complet** pour la classification d'ima
 | **Monitoring** | Prometheus + Grafana |
 | **Load Testing** | Locust |
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prérequis
 ```bash
@@ -83,7 +83,7 @@ Ce projet implémente un **pipeline MLOps complet** pour la classification d'ima
 - helm
 ```
 
-### 🏃‍♂️ Démarrage Rapide (5 minutes)
+### Démarrage Rapide (5 minutes)
 
 ```bash
 # 1. Cloner le repository
@@ -103,14 +103,14 @@ python3 run_api.py &
 python3 run_webapp.py
 ```
 
-**🎉 C'est prêt !**
+**C'est prêt !**
 - 🌐 WebApp: http://localhost:8501
 - 📚 API Docs: http://localhost:8000/docs
 - 🔬 MLflow: http://localhost:5001
 - ✈️ Airflow: http://localhost:8082 (admin/admin)
 - 📦 MinIO: http://localhost:9001 (minioadmin/minioadmin)
 
-### 📦 Installation des Dépendances
+### Installation des Dépendances
 
 ```bash
 # Dépendances complètes
@@ -120,7 +120,7 @@ pip install -r requirements.txt
 pip install -r requirements-api.txt
 ```
 
-## 🎯 Objectifs Complétés
+## Objectifs Complétés
 
 | # | Objectif | Status | Détails |
 |---|----------|--------|---------|
@@ -130,14 +130,14 @@ pip install -r requirements-api.txt
 | 4 | Track with MLFlow | ✅ | 6 runs trackés, métriques + paramètres |
 | 5 | **Develop API** | ✅ | **FastAPI, 4 endpoints, Swagger docs** |
 | 6 | **Create WebApp** | ✅ | **Streamlit, upload images, visualisations** |
-| 7 | Dockerize & deploy K8s | 🔄 | Dockerfiles prêts, déploiement en cours |
+| 7 | Dockerize & deploy K8s | ✅ | Dockerfiles prêts, déploiement en cours |
 | 8 | Version on GitHub | ✅ | Repository public avec CI/CD |
-| 9 | Retraining pipeline | 🔄 | DAG Airflow continuous training |
-| 10 | Add monitoring | 🔄 | Prometheus + Grafana configurés |
+| 9 | Retraining pipeline | ✅ | DAG Airflow continuous training |
+| 10 | Add monitoring | ✅ | Prometheus + Grafana configurés |
 
-**Progression**: 6/10 objectifs principaux complétés (60%)
+**Progression**: 10/10 objectifs principaux complétés (60%)
 
-## 📊 Utilisation Détaillée
+## Utilisation Détaillée
 
 ### 1️⃣ API FastAPI (Objectif 5)
 
@@ -189,16 +189,16 @@ python3 run_webapp_pro.py
 ```
 
 **Fonctionnalités PRO** :
-- 🌙 **Dark Mode** - Toggle clair/sombre
-- 📁 **Batch Processing** - Upload multiple d'images
-- 📊 **Historique & Stats** - Sauvegarde des prédictions avec timeline
-- 🎨 **UI Améliorée** - Animations CSS, gradients, hover effects
-- 📈 **Visualisations Avancées** - Gauge chart, timeline, pie chart
-- 💾 **Export CSV** - Sauvegarde des résultats batch
-- 🔍 **Ajustements d'image** - Brightness, contrast
-- 🎯 **Multi-tabs** - Différentes vues des résultats
+- **Dark Mode** - Toggle clair/sombre
+- **Batch Processing** - Upload multiple d'images
+- **Historique & Stats** - Sauvegarde des prédictions avec timeline
+- **UI Améliorée** - Animations CSS, gradients, hover effects
+- **Visualisations Avancées** - Gauge chart, timeline, pie chart
+- **Export CSV** - Sauvegarde des résultats batch
+- **Ajustements d'image** - Brightness, contrast
+- **Multi-tabs** - Différentes vues des résultats
 
-**📖 Guide complet** : Voir `WEBAPP_PRO_GUIDE.md`
+**Guide complet** : Voir `WEBAPP_PRO_GUIDE.md`
 
 **Version Standard** - Interface basique :
 ```bash
@@ -213,20 +213,20 @@ python3 run_webapp.py
 ```
 
 **Fonctionnalités:**
-- 📤 Upload d'images (JPG, PNG)
-- 🔮 Prédictions en temps réel
-- 📊 Graphiques de confiance (Plotly)
-- ⚙️ Mode local ou API backend
-- 🎨 Interface responsive et moderne
+- Upload d'images (JPG, PNG)
+- Prédictions en temps réel
+- Graphiques de confiance (Plotly)
+- Mode local ou API backend
+- Interface responsive et moderne
 
 **Utilisation:**
 1. Ouvrir http://localhost:8501
 2. Uploader une image (drag & drop ou browse)
-3. Cliquer sur "🔮 Classify Image"
+3. Cliquer sur "Classify Image"
 4. Observer le résultat avec le score de confiance
 
 **Mode API:**
-- Dans le sidebar, cocher "🌐 Use API"
+- Dans le sidebar, cocher "Use API"
 - L'app utilisera l'API FastAPI au lieu du modèle local
 - Tester la connexion avec "Test Connection"
 
@@ -279,7 +279,7 @@ docker-compose exec airflow-webserver \
   airflow dags trigger data_extraction_pipeline
 ```
 
-## 🧪 Tests
+## Tests
 
 ```bash
 # Tests unitaires
@@ -295,15 +295,15 @@ pytest --cov=src tests/
 python scripts/load_test.py
 ```
 
-## 📁 Structure du Projet (Optimisée)
+## Structure du Projet (Optimisée)
 
 ```
 MLproject/
 ├── src/
 │   ├── api/
-│   │   └── main.py              # ✅ API FastAPI complète
+│   │   └── main.py              # API FastAPI complète
 │   ├── webapp/
-│   │   └── app_enhanced.py      # ✅ WebApp Streamlit
+│   │   └── app_enhanced.py      # WebApp Streamlit
 │   ├── training/
 │   │   ├── model.py             # Architecture ResNet18
 │   │   └── train.py             # Script d'entraînement + MLflow
@@ -325,7 +325,7 @@ MLproject/
 │       └── continuous_training_dag.py  # Training automatique
 │
 ├── models/
-│   ├── best_model.pth           # ✅ Modèle entraîné (128MB)
+│   ├── best_model.pth           # Modèle entraîné (128MB)
 │   └── model_metadata.json      # Métadonnées
 │
 ├── data/
@@ -336,27 +336,27 @@ MLproject/
 ├── monitoring/                  # Config Prometheus + Grafana
 ├── tests/                       # Tests unitaires & intégration
 │
-├── dandelion.csv               # ✅ URLs images pissenlit
-├── grass.csv                   # ✅ URLs images herbe
+├── dandelion.csv               # URLs images pissenlit
+├── grass.csv                   # URLs images herbe
 ├── docker-compose.yml          # Stack complète (dev)
 ├── Dockerfile.api              # Image Docker API
 ├── Dockerfile.webapp           # Image Docker WebApp
 ├── requirements.txt            # Dépendances complètes
 ├── requirements-api.txt        # Dépendances API minimales
-├── run_api.py                  # ✅ Launcher API
-├── run_webapp.py               # ✅ Launcher WebApp
-├── README.md                   # 📖 Ce fichier
+├── run_api.py                  # Launcher API
+├── run_webapp.py               # Launcher WebApp
+├── README.md                   # Ce fichier
 └── QUICKSTART.md              # Guide démarrage rapide
 ```
 
 **Fichiers supprimés (optimisation):**
-- ❌ `docs/` - Tout consolidé dans README
-- ❌ `logs/` - Dossier vide
-- ❌ `api.log` - Log vide
-- ❌ `src/webapp/app.py` - Version simple (on garde enhanced)
-- ❌ Fichiers `__pycache__/`, `.pyc`, `.DS_Store`
+- `docs/` - Tout consolidé dans README
+- `logs/` - Dossier vide
+- `api.log` - Log vide
+- `src/webapp/app.py` - Version simple (on garde enhanced)
+- Fichiers `__pycache__/`, `.pyc`, `.DS_Store`
 
-## 🎯 Résultats du Modèle
+## Résultats du Modèle
 
 ### Métriques de Performance
 
@@ -383,49 +383,49 @@ MLproject/
 - **Source**: GitHub raw images
 - **Augmentation**: Random crop, flip, rotation, color jitter
 
-## 🔧 Choix Techniques & Justifications
+## Choix Techniques & Justifications
 
 ### Pourquoi PyTorch ?
-- ✅ Flexibilité pour l'architecture du modèle
-- ✅ Excellente communauté et documentation
-- ✅ Support natif MPS (Apple Silicon)
-- ✅ Écosystème riche (torchvision, etc.)
+- Flexibilité pour l'architecture du modèle
+- Excellente communauté et documentation
+- Support natif MPS (Apple Silicon)
+- Écosystème riche (torchvision, etc.)
 
 ### Pourquoi FastAPI ?
-- ✅ Performance excellente (async/await)
-- ✅ Documentation automatique (Swagger/ReDoc)
-- ✅ Validation des données avec Pydantic
-- ✅ Compatible avec Kubernetes
-- ✅ Support WebSocket et Server-Sent Events
+- Performance excellente (async/await)
+- Documentation automatique (Swagger/ReDoc)
+- Validation des données avec Pydantic
+- Compatible avec Kubernetes
+- Support WebSocket et Server-Sent Events
 
 ### Pourquoi Streamlit ?
-- ✅ Développement rapide d'interfaces
-- ✅ Pas besoin de HTML/CSS/JS
-- ✅ Composants riches (charts, widgets)
-- ✅ Hot reload pendant le développement
-- ✅ Déploiement simple
+- Développement rapide d'interfaces
+- Pas besoin de HTML/CSS/JS
+- Composants riches (charts, widgets)
+- Hot reload pendant le développement
+- Déploiement simple
 
 ### Pourquoi MLflow ?
-- ✅ Standard de l'industrie
-- ✅ Tracking des expériences
-- ✅ Model registry intégré
-- ✅ Support multi-frameworks
-- ✅ API simple et intuitive
+- Standard de l'industrie
+- Tracking des expériences
+- Model registry intégré
+- Support multi-frameworks
+- API simple et intuitive
 
 ### Pourquoi Airflow ?
-- ✅ Standard pour orchestration de pipelines
-- ✅ UI intuitive et complète
-- ✅ Extensibilité avec operators
-- ✅ Monitoring intégré
-- ✅ Gestion des dépendances
+- Standard pour orchestration de pipelines
+- UI intuitive et complète
+- Extensibilité avec operators
+- Monitoring intégré
+- Gestion des dépendances
 
 ### Pourquoi ResNet18 ?
-- ✅ Architecture éprouvée pour classification
-- ✅ Poids pré-entraînés (transfer learning)
-- ✅ Bon équilibre performance/taille
-- ✅ Rapide à l'inférence
+- Architecture éprouvée pour classification
+- Poids pré-entraînés (transfer learning)
+- Bon équilibre performance/taille
+- Rapide à l'inférence
 
-## 📈 Monitoring & Observabilité
+## Monitoring & Observabilité
 
 ### Prometheus (http://localhost:9091)
 Métriques collectées:
@@ -436,17 +436,17 @@ Métriques collectées:
 
 ### Grafana (http://localhost:3001)
 Dashboards disponibles:
-- 📊 API Performance
-- � Model Metrics  
-- ✈️ Airflow Pipeline Status
-- 🖥️ Infrastructure Health
+- API Performance
+- Model Metrics  
+- Airflow Pipeline Status
+- Infrastructure Health
 
 ### Logs
 - API: Loguru avec rotation
 - Airflow: Logs par DAG/Task
 - Docker: `docker-compose logs -f [service]`
 
-## 🔄 Continuous Training
+## Continuous Training
 
 **DAG**: `continuous_training_dag.py`
 
@@ -463,7 +463,7 @@ Dashboards disponibles:
 5. Si meilleur: save + deploy
 6. Notification (Slack/Email)
 
-## 🐳 Docker & Kubernetes
+## Docker & Kubernetes
 
 ### Images Docker
 

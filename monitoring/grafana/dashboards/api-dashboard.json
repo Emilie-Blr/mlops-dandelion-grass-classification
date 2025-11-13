@@ -1,0 +1,32 @@
+{
+  "title": "MLOps API Monitoring",
+  "uid": "mlops-api-dashboard",
+  "version": 1,
+  "timezone": "browser",
+  "panels": [
+    {
+      "id": 1,
+      "title": "API Requests per Second",
+      "type": "graph",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "targets": [
+        {
+          "expr": "rate(http_requests_total[5m])",
+          "legendFormat": "{{method}} {{path}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Response Time (ms)",
+      "type": "graph",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) * 1000",
+          "legendFormat": "95th percentile"
+        }
+      ]
+    }
+  ]
+}
