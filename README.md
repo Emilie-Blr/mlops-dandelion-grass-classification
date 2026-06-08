@@ -1,4 +1,4 @@
-# 🌼 MLOps Project: Dandelion vs Grass Classification
+# MLOps Project: Dandelion vs Grass Classification
 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.1.0-red.svg)](https://pytorch.org/)
@@ -7,21 +7,18 @@
 
 ## Description
 
-Ce projet implémente un **pipeline MLOps complet** pour la classification d'images binaire (pissenlit 🌼 vs herbe 🌿) avec :
+Ce projet implémente un **pipeline MLOps complet** pour la classification d'images binaire (pissenlit vs herbe) avec :
 
-✅ **Objectif 1-3**: Extraction, prétraitement et stockage des données (Airflow + MinIO)  
-✅ **Objectif 4**: Tracking des modèles et expériences avec MLflow  
-✅ **Objectif 5**: API REST pour les prédictions (FastAPI)  
-✅ **Objectif 6**: Interface utilisateur interactive (Streamlit)  
-✅ **Objectif 7**: Dockerisation et déploiement Kubernetes  
-✅ **Objectif 9**: Continuous Training automatisé  
-✅ **Objectif 10**: Monitoring avec Prometheus + Grafana
-✅**Objectif 11**: Use a feature store
-✅**Objectif 12**: Add load tests (Locust).
-✅**Objectif 13**: Add Airflow DAGs to do Continuous Training (CT)
-
-**Date limite**: Dimanche 2 novembre 2025 à minuit  
-**Présentation**: 10min démo + 15min Q&A  
+**Objectif 1-3**: Extraction, prétraitement et stockage des données (Airflow + MinIO)  
+**Objectif 4**: Tracking des modèles et expériences avec MLflow  
+**Objectif 5**: API REST pour les prédictions (FastAPI)  
+**Objectif 6**: Interface utilisateur interactive (Streamlit)  
+**Objectif 7**: Dockerisation et déploiement Kubernetes  
+**Objectif 9**: Continuous Training automatisé  
+**Objectif 10**: Monitoring avec Prometheus + Grafana
+**Objectif 11**: Use a feature store
+**Objectif 12**: Add load tests (Locust).
+**Objectif 13**: Add Airflow DAGs to do Continuous Training (CT)
 
 ## Équipe (Groupe 5)
 
@@ -83,7 +80,7 @@ Ce projet implémente un **pipeline MLOps complet** pour la classification d'ima
 - helm
 ```
 
-### Démarrage Rapide (5 minutes)
+### Démarrage Rapide
 
 ```bash
 # 1. Cloner le repository
@@ -93,7 +90,7 @@ cd MLproject
 # 2. Lancer l'infrastructure avec Docker Compose
 docker-compose up -d
 
-# 3. Attendre que les services démarrent (2-3 minutes)
+# 3. Attendre que les services démarrent
 docker-compose ps
 
 # 4. Lancer l'API
@@ -104,11 +101,11 @@ python3 run_webapp.py
 ```
 
 **C'est prêt !**
-- 🌐 WebApp: http://localhost:8501
-- 📚 API Docs: http://localhost:8000/docs
-- 🔬 MLflow: http://localhost:5001
-- ✈️ Airflow: http://localhost:8082 (admin/admin)
-- 📦 MinIO: http://localhost:9001 (minioadmin/minioadmin)
+- WebApp: http://localhost:8501
+- API Docs: http://localhost:8000/docs
+- MLflow: http://localhost:5001
+- Airflow: http://localhost:8082 (admin/admin)
+- MinIO: http://localhost:9001 (minioadmin/minioadmin)
 
 ### Installation des Dépendances
 
@@ -116,7 +113,7 @@ python3 run_webapp.py
 # Dépendances complètes
 pip install -r requirements.txt
 
-# Dépendances API uniquement (léger)
+# Dépendances API uniquement
 pip install -r requirements-api.txt
 ```
 
@@ -135,11 +132,11 @@ pip install -r requirements-api.txt
 | 9 | Retraining pipeline | ✅ | DAG Airflow continuous training |
 | 10 | Add monitoring | ✅ | Prometheus + Grafana configurés |
 
-**Progression**: 10/10 objectifs principaux complétés (60%)
+**Progression**: 10/10 objectifs principaux complétés
 
 ## Utilisation Détaillée
 
-### 1️⃣ API FastAPI (Objectif 5)
+### API FastAPI
 
 **Lancer l'API:**
 ```bash
@@ -178,11 +175,11 @@ with open("data/dandelion/00000001.jpg", "rb") as f:
 # {'predicted_class': 'dandelion', 'confidence': 0.9876, 'prediction_time': 0.123}
 ```
 
-### 2️⃣ WebApp Streamlit (Objectif 6)
+### WebApp Streamlit
 
 **Deux versions disponibles:**
 
-**🌟 Version PRO (Recommandée)** - Avec fonctionnalités avancées :
+** Version PRO ** - Avec fonctionnalités avancées :
 ```bash
 python3 run_webapp_pro.py
 # Accessible sur http://localhost:8501
@@ -230,7 +227,7 @@ python3 run_webapp.py
 - L'app utilisera l'API FastAPI au lieu du modèle local
 - Tester la connexion avec "Test Connection"
 
-### 3️⃣ MLflow Tracking (Objectif 4)
+### MLflow Tracking 
 
 **Interface MLflow:**
 ```bash
@@ -246,7 +243,7 @@ python scripts/check_mlflow.py
 **Expérience**: `dandelion-grass-classification`  
 **Meilleur run**: 91.59% accuracy, 91.59% F1-score
 
-### 4️⃣ Entraînement du Modèle
+### Entraînement du Modèle
 
 **Script d'entraînement avancé:**
 ```bash
@@ -263,7 +260,7 @@ docker-compose exec airflow-webserver \
   airflow dags trigger model_training_pipeline
 ```
 
-### 5️⃣ Pipeline de Données
+### Pipeline de Données
 
 **Télécharger les images:**
 ```bash
@@ -295,7 +292,7 @@ pytest --cov=src tests/
 python scripts/load_test.py
 ```
 
-## Structure du Projet (Optimisée)
+## Structure du Projet
 
 ```
 MLproject/
@@ -310,14 +307,14 @@ MLproject/
 │   ├── utils/
 │   │   ├── helpers.py           # Utilitaires
 │   │   └── s3_client.py         # Client MinIO/S3
-│   └── config.py                # Configuration centralisée
+│   └── config.py                # Configuration 
 │
 ├── scripts/
 │   ├── check_mlflow.py          # Vérifier les runs MLflow
-│   ├── download_images.py       # Télécharger les datasets
-│   ├── test_api.py              # Tests automatisés API
+│   ├── download_images.py       
+│   ├── test_api.py              
 │   ├── train_advanced.py        # Entraînement avec options
-│   └── ...                      # Autres utilitaires
+│   └── ...                      
 │
 ├── airflow/
 │   └── dags/
@@ -325,36 +322,29 @@ MLproject/
 │       └── continuous_training_dag.py  # Training automatique
 │
 ├── models/
-│   ├── best_model.pth           # Modèle entraîné (128MB)
-│   └── model_metadata.json      # Métadonnées
+│   ├── best_model.pth           # Modèle entraîné
+│   └── model_metadata.json      
 │
 ├── data/
-│   ├── dandelion/               # Images pissenlit (200)
-│   └── grass/                   # Images herbe (200)
+│   ├── dandelion/               
+│   └── grass/                   
 │
 ├── k8s/                         # Manifestes Kubernetes
 ├── monitoring/                  # Config Prometheus + Grafana
 ├── tests/                       # Tests unitaires & intégration
 │
-├── dandelion.csv               # URLs images pissenlit
-├── grass.csv                   # URLs images herbe
-├── docker-compose.yml          # Stack complète (dev)
+├── dandelion.csv               
+├── grass.csv                   
+├── docker-compose.yml          # Stack complète
 ├── Dockerfile.api              # Image Docker API
 ├── Dockerfile.webapp           # Image Docker WebApp
-├── requirements.txt            # Dépendances complètes
-├── requirements-api.txt        # Dépendances API minimales
+├── requirements.txt            
+├── requirements-api.txt        # Dépendances API 
 ├── run_api.py                  # Launcher API
 ├── run_webapp.py               # Launcher WebApp
-├── README.md                   # Ce fichier
-└── QUICKSTART.md              # Guide démarrage rapide
+├── README.md                   
+└── QUICKSTART.md              
 ```
-
-**Fichiers supprimés (optimisation):**
-- `docs/` - Tout consolidé dans README
-- `logs/` - Dossier vide
-- `api.log` - Log vide
-- `src/webapp/app.py` - Version simple (on garde enhanced)
-- Fichiers `__pycache__/`, `.pyc`, `.DS_Store`
 
 ## Résultats du Modèle
 
@@ -387,16 +377,12 @@ MLproject/
 
 ### Pourquoi PyTorch ?
 - Flexibilité pour l'architecture du modèle
-- Excellente communauté et documentation
-- Support natif MPS (Apple Silicon)
+- Support natif 
 - Écosystème riche (torchvision, etc.)
 
 ### Pourquoi FastAPI ?
-- Performance excellente (async/await)
-- Documentation automatique (Swagger/ReDoc)
-- Validation des données avec Pydantic
+- Perf 
 - Compatible avec Kubernetes
-- Support WebSocket et Server-Sent Events
 
 ### Pourquoi Streamlit ?
 - Développement rapide d'interfaces
@@ -406,7 +392,6 @@ MLproject/
 - Déploiement simple
 
 ### Pourquoi MLflow ?
-- Standard de l'industrie
 - Tracking des expériences
 - Model registry intégré
 - Support multi-frameworks
@@ -414,13 +399,12 @@ MLproject/
 
 ### Pourquoi Airflow ?
 - Standard pour orchestration de pipelines
-- UI intuitive et complète
-- Extensibilité avec operators
+- UI intuitive
 - Monitoring intégré
 - Gestion des dépendances
 
 ### Pourquoi ResNet18 ?
-- Architecture éprouvée pour classification
+- Architecture pour classification
 - Poids pré-entraînés (transfer learning)
 - Bon équilibre performance/taille
 - Rapide à l'inférence
@@ -441,19 +425,13 @@ Dashboards disponibles:
 - Airflow Pipeline Status
 - Infrastructure Health
 
-### Logs
-- API: Loguru avec rotation
-- Airflow: Logs par DAG/Task
-- Docker: `docker-compose logs -f [service]`
-
 ## Continuous Training
 
 **DAG**: `continuous_training_dag.py`
 
 **Triggers automatiques:**
-1. ✅ Nouvelles données (>100 images)
-2. ✅ Schedule hebdomadaire (dimanche 2h)
-3. ✅ Performance < seuil (90% accuracy)
+1. Nouvelles données (>100 images)
+3. Performance < seuil (90% accuracy)
 
 **Pipeline:**
 1. Extraction nouvelles données
@@ -461,7 +439,6 @@ Dashboards disponibles:
 3. Re-entraînement du modèle
 4. Évaluation sur test set
 5. Si meilleur: save + deploy
-6. Notification (Slack/Email)
 
 ## Docker & Kubernetes
 
@@ -473,8 +450,8 @@ docker build -f Dockerfile.api -t mlops-api:latest .
 docker build -f Dockerfile.webapp -t mlops-webapp:latest .
 
 # Push to DockerHub
-docker push [username]/mlops-api:latest
-docker push [username]/mlops-webapp:latest
+docker push [username]/mlops-api:latest   # on a enlevé volontairement notre username
+docker push [username]/mlops-webapp:latest # on a enlevé volontairement notre username
 ```
 
 ### Déploiement Kubernetes
@@ -495,18 +472,18 @@ kubectl port-forward svc/api-service 8000:8000 -n mlops
 kubectl port-forward svc/webapp-service 8501:8501 -n mlops
 ```
 
-## 🔐 Sécurité & Best Practices
+## Sécurité & Best Practices
 
-- ✅ Variables d'environnement pour secrets
-- ✅ .gitignore pour fichiers sensibles
-- ✅ Validation des inputs (Pydantic)
-- ✅ Rate limiting sur API
-- ✅ Health checks pour tous les services
-- ✅ Logs sans données sensibles
-- ✅ CORS configuré correctement
-- ✅ Dépendances à jour
+- Variables d'environnement pour secrets
+- .gitignore pour fichiers sensibles
+- Validation des inputs (Pydantic)
+- Rate limiting sur API
+- Health checks pour tous les services
+- Logs sans données sensibles
+- CORS configuré correctement
+- Dépendances à jour
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### L'API ne démarre pas
 ```bash
@@ -550,14 +527,13 @@ docker system prune -a
 docker-compose up -d
 ```
 
-## 📚 Documentation Complémentaire
+## Documentation Complémentaire
 
-- **QUICKSTART.md**: Guide de démarrage rapide (5min)
 - **Swagger API**: http://localhost:8000/docs
 - **MLflow UI**: http://localhost:5001
 - **Airflow UI**: http://localhost:8082
 
-## 🤝 Contribution & Workflow Git
+## Contribution & Workflow Git
 
 ```bash
 # 1. Créer une branche
@@ -581,18 +557,3 @@ git push origin feature/nouvelle-fonctionnalite
 - `test:` Ajout de tests
 - `ci:` CI/CD
 
-## 📧 Contact & Support
-
-**Projet**: MLOps Dandelion vs Grass Classification  
-**École**: Albert School  
-**Enseignant**: prillard.martin@gmail.com  
-**Deadline**: 2 novembre 2025, minuit  
-**Repository**: https://github.com/iblamesro/mlops-dandelion-grass-classification  
-
-## 📄 Licence
-
-Ce projet est réalisé dans le cadre d'un projet éducatif pour Albert School.
-
-----
-
-**⭐ N'oubliez pas de star le repo si ce projet vous a été utile !**
